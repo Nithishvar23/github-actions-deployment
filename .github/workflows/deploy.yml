@@ -33,3 +33,37 @@ jobs:
 
           ssh -i ~/.ssh/id_ed25519 ec2-user@$EC2_HOST \
           "sudo install -o apache -g apache -m 644 /tmp/index.html /var/www/html/index.html && sudo systemctl reload httpd"
+name: EC2 Auto Deployment
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Configure SSH
+        env:
+          EC2_HOST: ${{ secrets.EC2_HOST }}
+          EC2_SSH_KEY_B64: ${{ secrets.EC2_SSH_KEY_B64 }}
+        run: |
+          mkdir -p ~/.ssh
+          echo "$EC2_SSH_KEY_B64" | base64 -d > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H "$EC2_HOST" >> ~/.ssh/known_hosts
+
+      - name: Deploy Application
+        env:
+          EC2_HOST: ${{ secrets.EC2_HOST }}
+        run: |
+          scp -i ~/.ssh/id_rsa index.html ec2-user@$EC2_HOST:/tmp/index.html
+
+          ssh -i ~/.ssh/id_rsa ec2-user@$EC2_HOST \
+          "sudo install -o apache -g apache -m 644 /tmp/index.html /var/www/html/index.html && sudo systemctl reload httpd"
