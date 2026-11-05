@@ -32,4 +32,3 @@ jobs:
         run: |
           scp -i ~/.ssh/id_rsa index.html ec2-user@$EC2_HOST:/tmp/index.html
           ssh -i ~/.ssh/id_rsa ec2-user@$EC2_HOST "sudo install -o apache -g apache -m 644 /tmp/index.html /var/www/html/index.html && sudo systemctl reload httpd"
-EOF
