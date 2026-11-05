@@ -1,7 +1,5 @@
 name: EC2 Auto Deployment
 
-name: EC2 Auto Deployment
-
 "on":
   push:
     branches:
