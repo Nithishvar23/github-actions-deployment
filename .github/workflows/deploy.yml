@@ -1,6 +1,5 @@
 name: EC2 Auto Deployment
 
-cat > .github/workflows/deploy.yml <<'EOF'
 name: EC2 Auto Deployment
 
 "on":
